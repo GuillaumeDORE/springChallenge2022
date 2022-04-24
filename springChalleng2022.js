@@ -97,9 +97,6 @@ while (true) {
         }else{
             // Move to enemy who is a threat for my base 
             console.log('MOVE '+ targets[0].nextX + ' ' + targets[0].nextY );
-            // if(mana > 10){
-            //     console.log('SPELL WIND ' + oppBaseX + ' ' + oppBaseY);
-            // }
         }
     }
     // console.error(arrEntity);
