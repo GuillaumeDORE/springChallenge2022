@@ -31,7 +31,9 @@ while (true) {
     }
     const entityCount = parseInt(readline()); // Amount of heros and monsters you can see
 
-    let targets = [];// Array 
+    let targets = [];// Array of target
+    let heros = [];// Array of heros
+    let heroCounter = 0;
 
     for (let i = 0; i < entityCount; i++) {
         //Itterate to create array of entity
@@ -50,9 +52,33 @@ while (true) {
         //projected position
         let nextX = x + vx;
         let nextY = y + vy;
-
+        let waitPosX;
+        let waitPosY;
         let entity = { id, type, x, y, shieldLife, isControlled, health, vx, vy, nearBase, threatFor, nextX, nextY };//entity with all params
+
+        //Assignated wait pos for hero
+        if(type==1){
+            if(heroCounter==0){
+                baseX==0 ? entity.waitPosX = waitPosBaseX + 3500: entity.waitPosX = waitPosBaseX ;
+                baseY==0 ? entity.waitPosY = waitPosBaseY : entity.waitPosY = waitPosBaseY - 3500;
+                heroCounter++;
+            }else if(heroCounter==1){
+                baseX==0 ? entity.waitPosX = waitPosBaseX : entity.waitPosX = waitPosBaseX -3500 ;
+                baseY==0 ? entity.waitPosY = waitPosBaseY + 3500: entity.waitPosY = waitPosBaseY ;
+                heroCounter++;
+            }else{
+                entity.waitPosX = waitPosBaseX;
+                entity.waitPosY = waitPosBaseY; 
+            }
+        }
+
+        // Creation of array of entity
         arrEntity.push(entity);
+
+        //Creation of array of heros
+        if(type==1){
+            heros.push(entity);
+        };
 
         // If entity monster and threat for my base push it on targets array
         if( type == 0 && threatFor == 1 ){
@@ -60,17 +86,13 @@ while (true) {
         };
 
     }
+    console.error(heros)
     for (let i = 0; i < heroesPerPlayer; i++) {
         // In the first league: MOVE <x> <y> | WAIT; In later leagues: | SPELL <spellParams>;
 
         // Don't move if no target
         if(targets.length==0){
-            // if(i==0){
-            // console.log('WAIT');
-            // }else{
-            // console.log('MOVE '+ waitPosBaseX + ' ' + waitPosBaseY );
-            // }
-            console.log('MOVE '+ waitPosBaseX + ' ' + waitPosBaseY );
+            console.log('MOVE '+ heros[i].waitPosX + ' ' + heros[i].waitPosY  );
 
         }else{
             // Move to enemy who is a threat for my base 
@@ -84,4 +106,5 @@ while (true) {
     // console.error(targets);
     arrEntity = [];
     target = [];
+    heroCounter = 0;
 }
