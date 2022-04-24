@@ -35,8 +35,8 @@ while (true) {
     let heros = [];// Array of heros
     let heroCounter = 0;
 
+    //Itterate to create array of entity
     for (let i = 0; i < entityCount; i++) {
-        //Itterate to create array of entity
         let inputs = readline().split(' ');
         const id = parseInt(inputs[0]); // Unique identifier
         const type = parseInt(inputs[1]); // 0=monster, 1=your hero, 2=opponent hero
@@ -49,6 +49,7 @@ while (true) {
         const vy = parseInt(inputs[8]);
         const nearBase = parseInt(inputs[9]); // 0=monster with no target yet, 1=monster targeting a base
         const threatFor = parseInt(inputs[10]); // Given this monster's trajectory, is it a threat to 1=your base, 2=your opponent's base, 0=neither
+        
         //projected position
         let nextX = x + vx;
         let nextY = y + vy;
@@ -89,6 +90,10 @@ while (true) {
         baseX == 0 ? targets.sort((a, b) => a.nextXY - b.nextXY ) : targets.sort((a, b) => b.nextXY - a.nextXY );
 
     }
+
+//GESTION DES HEROES----------------------------------------------------------------------------------------------------------------------
+
+
     for (let i = 0; i < heroesPerPlayer; i++) {
         // In the first league: MOVE <x> <y> | WAIT; In later leagues: | SPELL <spellParams>;
 
@@ -97,9 +102,12 @@ while (true) {
             console.log('MOVE '+ heros[i].waitPosX + ' ' + heros[i].waitPosY );
 
         }else{
+            //try to launch a controle spell
             if(mana > 10 && targets[0].nearBase ==1 && targets[0].threatFor == 1){
                 console.log('SPELL CONTROLE ' + targets[0].id + ' ' + oppBaseX + ' ' + oppBaseY);
-
+                console.error(targets);
+                targets.push(targets.shift()); 
+                console.error(targets);
             }else{
                 // Move to enemy who is a threat for my base 
                 console.log('MOVE '+ targets[0].nextX + ' ' + targets[0].nextY );
