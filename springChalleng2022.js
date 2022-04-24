@@ -9,13 +9,13 @@ let waitPosBaseY;
 let oppBaseX;
 let oppBaseY;
 if(baseX==0){
-    waitPosBaseX = 3500;
-    waitPosBaseY = 2500;
+    waitPosBaseX = 4000;
+    waitPosBaseY = 3000;
     oppBaseX = 17630;
     oppBaseY = 9000;
 }else{
-    waitPosBaseX = 15000;
-    waitPosBaseY = 6000;
+    waitPosBaseX = 13630;
+    waitPosBaseY = 5000;
     oppBaseX = 0;
     oppBaseY = 0;
 }
@@ -52,9 +52,10 @@ while (true) {
         //projected position
         let nextX = x + vx;
         let nextY = y + vy;
+        let nextXY = nextX + nextY;
         let waitPosX;
         let waitPosY;
-        let entity = { id, type, x, y, shieldLife, isControlled, health, vx, vy, nearBase, threatFor, nextX, nextY };//entity with all params
+        let entity = { id, type, x, y, shieldLife, isControlled, health, vx, vy, nearBase, threatFor, nextX, nextY, nextXY };//entity with all params
 
         //Assignated wait pos for hero
         if(type==1){
@@ -84,23 +85,27 @@ while (true) {
         if( type == 0 && threatFor == 1 ){
             targets.push(entity);
         };
+        //sort the array of targets by which one is the nearest of the base
+        baseX == 0 ? targets.sort((a, b) => a.nextXY - b.nextXY ) : targets.sort((a, b) => b.nextXY - a.nextXY );
 
     }
-    console.error(heros)
     for (let i = 0; i < heroesPerPlayer; i++) {
         // In the first league: MOVE <x> <y> | WAIT; In later leagues: | SPELL <spellParams>;
 
         // Don't move if no target
         if(targets.length==0){
-            console.log('MOVE '+ heros[i].waitPosX + ' ' + heros[i].waitPosY  );
+            console.log('MOVE '+ heros[i].waitPosX + ' ' + heros[i].waitPosY );
 
         }else{
-            // Move to enemy who is a threat for my base 
-            console.log('MOVE '+ targets[0].nextX + ' ' + targets[0].nextY );
+            if(mana > 10 && targets[0].nearBase ==1 && targets[0].threatFor == 1){
+                console.log('SPELL CONTROLE ' + targets[0].id + ' ' + oppBaseX + ' ' + oppBaseY);
+
+            }else{
+                // Move to enemy who is a threat for my base 
+                console.log('MOVE '+ targets[0].nextX + ' ' + targets[0].nextY );
+            }            
         }
     }
-    // console.error(arrEntity);
-    // console.error(targets);
     arrEntity = [];
     target = [];
     heroCounter = 0;
