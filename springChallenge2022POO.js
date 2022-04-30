@@ -1,5 +1,5 @@
 class Entity  {
-    constructor (id, type, x, y, shieldLife, isControlled, health, vx, vy, nearBase, threatFor, me) {
+    constructor (id, type, x, y, shieldLife, isControlled, health, vx, vy, nearBase, threatFor, me, enemy) {
         this.id = id;
         this.type = type;
         this.x = x;
@@ -13,8 +13,11 @@ class Entity  {
         this.nextY = y+ vy;
         this.nearBase = nearBase;
         this.threatFor = threatFor;
-        this.targetId = -1;
+        this.targetId = -1; //target of hero
+        this.waitPosX = 0;
+        this.waitPosY = 0;
         this.me = me;
+        this.enemy = enemy;
         this.TYPE_MONSTER = 0;
         this.TYPE_MY_HERO = 1;
         this.TYPE_OTHER_HERO = 2;
@@ -27,6 +30,7 @@ class Entity  {
             return Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2));
         };
         this.distanceFromMyBase = this.getDistanceFrom(this.me.basePosX, this.me.basePosY);
+        this.distanceFromEnemyBase = this.getDistanceFrom(this.enemy.basePosX, this.enemy.basePosY);
     }
 }
 
@@ -68,7 +72,26 @@ class Game {
 
         this.addEntity = function (entity) {
             this.entities.push(entity);
-            if (entity.type === 1) this.heroes.push(entity)
+            if (entity.type === 1) {
+                const index = this.heroes.push(entity) -1; 
+                // Définir la waiting pose de chaque hero en fonction du hero et de la position de la base
+                switch (index) {
+                    case 0: 
+                        baseX === 0 ? this.heroes[index].waitPosX = 4840 : this.heroes[index].waitPosX = 12790;
+                        baseY === 0 ? this.heroes[index].waitPosY = 2325 : this.heroes[index].waitPosY = 6675;
+                        break;
+                    case 1: 
+                        baseX === 0 ? this.heroes[index].waitPosX = 4115 : this.heroes[index].waitPosX = 13515;
+                        baseY === 0 ? this.heroes[index].waitPosY = 6500 : this.heroes[index].waitPosY = 2500;
+                        break;
+                    case 2: 
+                        baseX === 0 ? this.heroes[index].waitPosX = 11100 : this.heroes[index].waitPosX = 6530;
+                        baseY === 0 ? this.heroes[index].waitPosY = 4450 : this.heroes[index].waitPosY = 4450;
+                        break;
+                    default:
+                        break;
+                }
+            }
         };
        
         this.me = new Player(baseX, baseY, 3, 0);
@@ -138,7 +161,7 @@ class Game {
                 return moveToFirstMonster()
             }
         }
-        return this.ACTION_WAIT //si pas de monstre dangereux
+        return this.ACTION_MOVE + ' ' + this.heroes[hero].waitPosX + ' ' + this.heroes[hero].waitPosY + ' Warior:' + this.heroes[hero].id//si pas de monstre dangereux
     };
     
     debug (...message) {
@@ -171,7 +194,8 @@ while (true) {
         inputs[8],
         inputs[9], // 0=monster with no target yet, 1=monster targeting a base
         inputs[10], // Given this monster's trajectory, is it a threat to 1=your base, 2=your opponent's base, 0=neither
-        game.me));
+        game.me,
+        game.enemy));
     }
     for (var i = 0; i < heroesPerPlayer; i++) {
         console.log(game.nextAction(i));
